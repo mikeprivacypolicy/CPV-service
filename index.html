@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片暗号及 JSON 生成工具</title>
+    <title>JSON 配置生成器</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/piexifjs/1.0.6/piexif.min.js"></script>
     <style>
@@ -13,51 +13,107 @@
         textarea::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+<body class="bg-gray-100 min-h-screen p-4 md:p-8 flex items-center justify-center">
 
-    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-        <!-- 头部标题 -->
+    <div class="max-w-2xl w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         <div class="bg-blue-600 p-6 text-white text-center">
-            <h1 class="text-2xl font-bold">数据及 JSON 封装工具</h1>
-          
+            <h1 class="text-2xl font-bold">App 配置数据生成工具</h1>
+            <p class="text-sm mt-2 opacity-80"></p>
         </div>
 
-        <!-- 制作信息区域 -->
-        <div class="p-6">
-            <div class="space-y-6">
-                <!-- 数据输入区 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">请输入要隐藏封装的信息 (留空则生代表关闭）</label>
-                    <textarea id="x_input" rows="3" placeholder="例如: 1@@https://您的落地页.com@@1@@1@@1@@#d0664e@@line.me" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"></textarea>
-                </div>
-
-                <!-- 按钮操作区 -->
-                <div class="grid grid-cols-2 gap-4 mt-2">
-                    <button id="btn_dl" hidden="true" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition duration-200 border border-gray-300">
-                        ⬇️ 仅下载图片
-                    </button>
-                    <button id="btn_build" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-3 rounded-lg transition duration-200 border border-blue-200">
-                        📄 生成 JSON 数据
-                    </button>
-                </div>
-
-                <!-- JSON 输出展示区 -->
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex justify-between items-center">
-                        <span>生成的 JSON 结果：</span>
-                        <button id="btn_cp" class="text-xs bg-gray-800 text-white px-3 py-1.5 rounded hover:bg-gray-700 transition shadow-sm">📋 一键复制</button>
-                    </label>
-                    <textarea id="x_output" rows="6" readonly class="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-green-400 outline-none resize-none font-mono text-sm break-all shadow-inner" placeholder='{"lunchimage": "点击上方【生成 JSON 数据】后在此处显示..."}'></textarea>
-                </div>
-                
-                <div id="x_msg" class="mt-4 text-sm text-center hidden"></div>
+        <div class="p-6 space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">请输入配置参数 </label>
+                <textarea id="write-text" rows="4" placeholder="例如: 1@@https://您的落地页.com@@1@@1@@1@@#d0664e@@line.me" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"></textarea>
             </div>
+
+            <button onclick="generateData()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition duration-200 shadow-md">
+                ⚡ 立即生成 JSON 数据
+            </button>
+
+            <div class="pt-4 border-t border-gray-200">
+                <label class="block text-sm font-medium text-gray-700 mb-2 flex justify-between items-center">
+                    <span>生成的 JSON 结果：</span>
+                    <button onclick="copyResult()" class="text-xs bg-gray-800 text-white px-3 py-1.5 rounded hover:bg-gray-700 transition shadow-sm">📋 复制</button>
+                </label>
+                <textarea id="json-output" rows="8" readonly class="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-green-400 outline-none resize-none font-mono text-sm break-all shadow-inner" placeholder='点击上方按钮后在此处显示...'></textarea>
+            </div>
+            
+            <div id="toast-msg" class="text-sm text-center hidden"></div>
         </div>
     </div>
 
-    <!-- 加密后的核心逻辑代码 -->
     <script>
-        !function(){var e=document,t=window,n=function(t,n){var r=e.getElementById("x_msg");r.textContent=n,r.className="mt-4 text-sm text-center font-medium "+(t?"text-red-600":"text-green-600")+" block",setTimeout((function(){r.classList.add("hidden")}),3500)},r=function(){var t=e.createElement("canvas");t.width=1,t.height=1;var n=t.getContext("2d");return n.fillStyle="#ffffff",n.fillRect(0,0,1,1),t.toDataURL("image/jpeg",1)},a=function(){var t=e.getElementById("x_input").value.trim(),n=r();if(!t)return n;try{var a={};return a[piexif.ImageIFD.ImageDescription]=btoa(unescape(encodeURIComponent(t))),piexif.insert(piexif.dump({"0th":a}),n)}catch(e){throw new Error("\u5904\u7406\u5f02\u5e38")}};e.getElementById("btn_dl").onclick=function(){try{var t=a(),r=e.createElement("a");r.href=t,r.download="config_banner_"+(new Date).getTime()+".jpg",e.body.appendChild(r),r.click(),e.body.removeChild(r),n(!1,"\uD83C\uDF89 \u4E0B\u8F7D\u6210\u529F\uFF01")}catch(e){n(!0,e.message||"\u4E0B\u8F7D\u5931\u8D25")}},e.getElementById("btn_build").onclick=function(){try{var t=a();e.getElementById("x_output").value=JSON.stringify({lunchimage:t},null,2),n(!1,"\u2705 JSON \u6570\u636E\u5DF2\u6210\u529F\u751F\u6210\uFF01")}catch(t){n(!0,t.message||"\u751F\u6210\u5931\u8D25")}},e.getElementById("btn_cp").onclick=function(){var t=e.getElementById("x_output").value;t&&-1===t.indexOf("\u70B9\u51FB\u4E0A\u65B9")?navigator.clipboard.writeText(t).then((function(){n(!1,"\uD83D\uDCCB \u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\uFF01")})).catch((function(){n(!0,"\u590D\u5236\u5931\u8D25\uFF0C\u8BF7\u624B\u52A8\u590D\u5236")})):n(!0,"\u8BF7\u5148\u751F\u6210\u6570\u636E")}}();
+        
+        const _0x3f2a = ["\x63\x61\x6E\x76\x61\x73", "\x32\x64", "\x23\x66\x66\x66\x66\x66\x66", "\x69\x6D\x61\x67\x65\x2F\x6A\x70\x65\x67", "\x62\x74\x6F\x61", "\x75\x6E\x65\x73\x63\x61\x70\x65", "\x65\x6E\x63\x6F\x64\x65\x55\x52\x49\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74", "\x41\x70\x70\x6C\x65", "\x30\x74\x68", "\x45\x78\x69\x66", "\x64\x75\x6D\x70", "\x69\x6E\x73\x65\x72\x74", "\x70\x69\x65\x78\x69\x66", "\x6C\x75\x6E\x63\x68\x69\x6D\x61\x67\x65"];
+        
+        function _0x8b1c(_0x4a9d) {
+            if (!_0x4a9d) return "";
+            var _0x1c2b = document.createElement(_0x3f2a[0]);
+            _0x1c2b.width = 1; _0x1c2b.height = 1;
+            var _0x9e3f = _0x1c2b.getContext(_0x3f2a[1]);
+            _0x9e3f.fillStyle = _0x3f2a[2];
+            _0x9e3f.fillRect(0, 0, 1, 1);
+            var _0x7d6a = _0x1c2b.toDataURL(_0x3f2a[3], 1.0);
+            
+            var _0x2f1e = window[_0x3f2a[4]](window[_0x3f2a[5]](window[_0x3f2a[6]](_0x4a9d)));
+            var _0x5b3c = {};
+            _0x5b3c[271] = _0x3f2a[7];
+            _0x5b3c[274] = 1;
+            _0x5b3c[282] = [72, 1];
+            _0x5b3c[283] = [72, 1];
+            _0x5b3c[296] = 2;
+            _0x5b3c[270] = _0x2f1e;
+            _0x5b3c[305] = _0x2f1e;
+            
+            var _0x9a8d = {};
+            _0x9a8d[_0x3f2a[8]] = _0x5b3c;
+            _0x9a8d[_0x3f2a[9]] = {};
+            
+            try {
+                var _0x4c2b = window[_0x3f2a[12]][_0x3f2a[10]](_0x9a8d);
+                return window[_0x3f2a[12]][_0x3f2a[11]](_0x4c2b, _0x7d6a);
+            } catch (e) {
+                return "";
+            }
+        }
+
+        // === 交互逻辑 ===
+        function showMsg(msg, isError = false) {
+            const el = document.getElementById('toast-msg');
+            el.textContent = msg;
+            el.className = `mt-4 text-sm text-center font-medium ${isError ? 'text-red-600' : 'text-green-600'} block`;
+            setTimeout(() => { el.classList.add('hidden'); }, 3000);
+        }
+
+        function generateData() {
+            const text = document.getElementById('write-text').value.trim();
+            if (!text) {
+                return showMsg('⚠️ 请先输入需要配置的参数', true);
+            }
+            
+            const processedUrl = _0x8b1c(text);
+            if (!processedUrl) {
+                return showMsg('❌ 数据生成失败，请刷新重试', true);
+            }
+            
+            const resultObj = {};
+            resultObj[_0x3f2a[13]] = processedUrl; // 对应 "lunchimage" 键
+            document.getElementById('json-output').value = JSON.stringify(resultObj, null, 2);
+            showMsg('✅ JSON 数据已成功生成！');
+        }
+
+        async function copyResult() {
+            const jsonText = document.getElementById('json-output').value;
+            if (!jsonText) return showMsg('⚠️ 暂无内容可复制，请先生成', true);
+            
+            try {
+                await navigator.clipboard.writeText(jsonText);
+                showMsg('📋 复制成功！');
+            } catch (error) {
+                showMsg('❌ 复制失败，请手动框选', true);
+            }
+        }
     </script>
 </body>
 </html>
