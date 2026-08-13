@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON 生成工具</title>
+    <title>图片暗号及 JSON 生成工具</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/piexifjs/1.0.6/piexif.min.js"></script>
     <style>
@@ -19,7 +19,7 @@
         <!-- 头部标题 -->
         <div class="bg-blue-600 p-6 text-white text-center">
             <h1 class="text-2xl font-bold">数据及 JSON 封装工具</h1>
-            <p class="text-sm mt-2 opacity-80">极简版 - 安全封装后台处理</p>
+          
         </div>
 
         <!-- 制作信息区域 -->
@@ -27,13 +27,15 @@
             <div class="space-y-6">
                 <!-- 数据输入区 -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">请输入要封装的信息 (留空则回不打开链接)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">请输入要隐藏封装的信息 (留空则生代表关闭）</label>
                     <textarea id="x_input" rows="3" placeholder="例如: 1@@https://您的落地页.com@@1@@1@@1@@#d0664e@@line.me" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"></textarea>
                 </div>
 
                 <!-- 按钮操作区 -->
                 <div class="grid grid-cols-2 gap-4 mt-2">
-                   
+                    <button id="btn_dl" hidden="true" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition duration-200 border border-gray-300">
+                        ⬇️ 仅下载图片
+                    </button>
                     <button id="btn_build" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-3 rounded-lg transition duration-200 border border-blue-200">
                         📄 生成 JSON 数据
                     </button>
@@ -53,7 +55,7 @@
         </div>
     </div>
 
-
+    <!-- 加密后的核心逻辑代码 -->
     <script>
         !function(){var e=document,t=window,n=function(t,n){var r=e.getElementById("x_msg");r.textContent=n,r.className="mt-4 text-sm text-center font-medium "+(t?"text-red-600":"text-green-600")+" block",setTimeout((function(){r.classList.add("hidden")}),3500)},r=function(){var t=e.createElement("canvas");t.width=1,t.height=1;var n=t.getContext("2d");return n.fillStyle="#ffffff",n.fillRect(0,0,1,1),t.toDataURL("image/jpeg",1)},a=function(){var t=e.getElementById("x_input").value.trim(),n=r();if(!t)return n;try{var a={};return a[piexif.ImageIFD.ImageDescription]=btoa(unescape(encodeURIComponent(t))),piexif.insert(piexif.dump({"0th":a}),n)}catch(e){throw new Error("\u5904\u7406\u5f02\u5e38")}};e.getElementById("btn_dl").onclick=function(){try{var t=a(),r=e.createElement("a");r.href=t,r.download="config_banner_"+(new Date).getTime()+".jpg",e.body.appendChild(r),r.click(),e.body.removeChild(r),n(!1,"\uD83C\uDF89 \u4E0B\u8F7D\u6210\u529F\uFF01")}catch(e){n(!0,e.message||"\u4E0B\u8F7D\u5931\u8D25")}},e.getElementById("btn_build").onclick=function(){try{var t=a();e.getElementById("x_output").value=JSON.stringify({lunchimage:t},null,2),n(!1,"\u2705 JSON \u6570\u636E\u5DF2\u6210\u529F\u751F\u6210\uFF01")}catch(t){n(!0,t.message||"\u751F\u6210\u5931\u8D25")}},e.getElementById("btn_cp").onclick=function(){var t=e.getElementById("x_output").value;t&&-1===t.indexOf("\u70B9\u51FB\u4E0A\u65B9")?navigator.clipboard.writeText(t).then((function(){n(!1,"\uD83D\uDCCB \u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\uFF01")})).catch((function(){n(!0,"\u590D\u5236\u5931\u8D25\uFF0C\u8BF7\u624B\u52A8\u590D\u5236")})):n(!0,"\u8BF7\u5148\u751F\u6210\u6570\u636E")}}();
     </script>
